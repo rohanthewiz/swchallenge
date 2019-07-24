@@ -8,6 +8,5 @@
 - Unix Timestamp
 - IPV4 Address
 
-- Maintain an array of login attempts
-- Sort on receipt of new la on timestamp
+- Sort on receipt of new logAtt on timestamp
 
