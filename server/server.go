@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"swchallenge/logger"
+	"swchallenge/superman"
 )
 
 type requestParams struct {
@@ -33,21 +34,24 @@ func HandleV1(w http.ResponseWriter, r *http.Request) {
 		var reqParams requestParams
 		err = json.Unmarshal(body, &reqParams)
 		if err != nil {
-			logger.LogErr(err)
+			logger.LogErr(err, "Error unmarshalling request body")
 			http.Error(w, "Error when reading the request", 500)
 			return
 		}
-		fmt.Printf("%#v\n", reqParams)
+		logger.Log("Info", "Post received", "params", fmt.Sprintf("%#v", reqParams))
+
+		resp, err := superman.ProcessLoginAttempt(
+			reqParams.EventUUID, reqParams.IPAddress, reqParams.Username, reqParams.Timestamp)
 
 		// Response
-		resp, err := json.Marshal(reqParams)
+		respByts, err := json.Marshal(resp)
 		if err != nil {
-			logger.LogErr(err)
+			logger.LogErr(err, "Error marshalling response")
 			http.Error(w, "Error when processing the response", 500)
 			return
 		}
 		w.Header().Set("content-type", "application/json")
-		_, _ = w.Write(resp)
+		_, _ = w.Write(respByts)
 
 	} else {
 		fmt.Fprint(w, "Sorry, only the POST method is supported")
