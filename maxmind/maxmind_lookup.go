@@ -1,19 +1,14 @@
 package maxmind
 
 import (
-	"net"
 	"github.com/oschwald/maxminddb-golang"
 	"github.com/rohanthewiz/serr"
+	"net"
+	"swchallenge/geo"
 )
 
-type Location struct {
-	AccuracyRadius int64 `maxminddb:"accuracy_radius"`
-	Latitude float64 `maxminddb:"latitude"`
-	Longitude float64 `maxminddb:"longitude"`
-}
-
-func IPToLatLon(strIP string) (loc Location, err error) {
-	db, err := maxminddb.Open("maxmind/GeoLite2-City/GeoLite2-City.mmdb")
+func IPToLatLon(dbPath, strIP string) (loc geo.Geo, err error) {
+	db, err := maxminddb.Open(dbPath)
 	if err != nil {
 		return loc, serr.Wrap(err, "Error opening maxmind database")
 	}
@@ -22,10 +17,7 @@ func IPToLatLon(strIP string) (loc Location, err error) {
 	ip := net.ParseIP(strIP)
 
 	var record struct {
-		Loc Location `maxminddb:"location"`
-	//	Country struct {
-	//		ISOCode string `maxminddb:"iso_code"`
-	//	} `maxminddb:"country"`
+		Loc geo.Geo `maxminddb:"location"`
 	}
 
 	err = db.Lookup(ip, &record)

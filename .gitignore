@@ -5,3 +5,4 @@ log/*
 !log/.keep
 
 swchallenge
+login_attempt*.db
