@@ -1,6 +1,8 @@
 package maxmind
 
 import (
+	"reflect"
+	"swchallenge/geo"
 	"swchallenge/logger"
 	"testing"
 )
@@ -27,4 +29,16 @@ func TestIPToLatLon(t *testing.T) {
 			t.Error("Lon (want):", testData[i].Lon, "Lon (got):", loc.Longitude)
 		}
 	}
+}
+
+func TestMaxMindMapWrap(t *testing.T) {
+	const ip = "206.81.252.6"
+	currGeo := geo.Geo{Latitude: 39.211, Longitude: -76.8362, AccuracyRadius: 5}
+	MaxMindMap.SetGeo(ip, currGeo)
+
+	g, err := MaxMindMap.GetGeo(ip)
+	if err != nil && !reflect.DeepEqual(g, currGeo) {
+		t.Error("Maxmind map cache failed")
+	}
+	t.Log(g)
 }

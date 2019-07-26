@@ -38,9 +38,15 @@ type SubsequentLoginAttempt struct {
 
 func ProcessLoginAttempt(uuid, ipAddr, username string, timestamp int64) (resp Response, err error) {
 	// Get CurrentGeo
-	currentGeo, err := maxmind.IPToLatLon("default", ipAddr)
-	if err != nil {
-		return resp, serr.Wrap(err, "Error obtaining current Geo from ip address", "ipAddr", ipAddr)
+	var currentGeo geo.Geo
+	if g, err := maxmind.MaxMindMap.GetGeo(ipAddr); err == nil {
+		currentGeo = g
+	} else {
+		currentGeo, err = maxmind.IPToLatLon("default", ipAddr)
+		if err != nil {
+			return resp, serr.Wrap(err, "Error obtaining current Geo from ip address", "ipAddr", ipAddr)
+		}
+		maxmind.MaxMindMap.SetGeo(ipAddr, currentGeo)
 	}
 	resp.CurrentGeo = currentGeo
 
