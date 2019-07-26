@@ -8,7 +8,7 @@ import (
 
 const (
 	speedThreshold = 500 // mph
-	kmToMile = 0.6214
+	kmToMile       = 0.6214
 )
 
 // TODO !!! Unit Test
@@ -19,7 +19,7 @@ func IsSuspiciousTravel(la1, la2 loginattempt.LoginAttempt) (isSuspicious bool, 
 	// subtract radii
 	dist -= float64(la1.AccuracyRadius + la2.AccuracyRadius)
 
-	timeDiffHrs := math.Abs(float64(la1.Timestamp - la2.Timestamp)) / 3600
+	timeDiffHrs := math.Abs(float64(la1.Timestamp-la2.Timestamp)) / 3600
 	speed = int64(dist * kmToMile / timeDiffHrs)
 
 	if speed > speedThreshold {

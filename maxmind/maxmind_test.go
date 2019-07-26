@@ -6,7 +6,7 @@ import (
 )
 
 var testData = []struct {
-	IP string
+	IP  string
 	Lat float64
 	Lon float64
 }{

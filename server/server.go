@@ -10,8 +10,8 @@ import (
 )
 
 type requestParams struct {
-	Username string `json:"username"`
-	Timestamp int64 `json:"unix_timestamp"`
+	Username  string `json:"username"`
+	Timestamp int64  `json:"unix_timestamp"`
 	EventUUID string `json:"event_uuid"`
 	IPAddress string `json:"ip_address"`
 }
@@ -29,7 +29,9 @@ func HandleV1(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Error when reading the request", 500)
 			return
 		}
-		defer r.Body.Close()
+		defer func() {
+			_ = r.Body.Close()
+		}()
 
 		var reqParams requestParams
 		err = json.Unmarshal(body, &reqParams)
@@ -59,6 +61,6 @@ func HandleV1(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write(respByts)
 
 	} else {
-		fmt.Fprint(w, "Sorry, only the POST method is supported")
+		_, _ = fmt.Fprint(w, "Sorry, only the POST method is supported")
 	}
 }

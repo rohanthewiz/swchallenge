@@ -45,7 +45,7 @@ func ProcessLoginAttempt(uuid, ipAddr, username string, timestamp int64) (resp R
 	resp.CurrentGeo = currentGeo
 
 	// Store the login Attempt
-	currLA := loginattempt.LoginAttempt{ IP: ipAddr, Timestamp: timestamp, Username: username, EventUUID: uuid}
+	currLA := loginattempt.LoginAttempt{IP: ipAddr, Timestamp: timestamp, Username: username, EventUUID: uuid}
 	currLA.Latitude = currentGeo.Latitude
 	currLA.Longitude = currentGeo.Longitude
 	currLA.AccuracyRadius = currentGeo.AccuracyRadius
@@ -87,12 +87,12 @@ func ProcessLoginAttempt(uuid, ipAddr, username string, timestamp int64) (resp R
 	} else {
 		nextEvent := SubsequentEvent{}
 		nextEvent.SubsequentLoginAttempt.Timestamp = nextLA.Timestamp
-		nextEvent.SubsequentLoginAttempt.IP	= nextLA.IP
+		nextEvent.SubsequentLoginAttempt.IP = nextLA.IP
 		nextEvent.SubsequentLoginAttempt.Latitude = nextLA.Latitude
 		nextEvent.SubsequentLoginAttempt.Longitude = nextLA.Longitude
 		nextEvent.SubsequentLoginAttempt.AccuracyRadius = nextLA.AccuracyRadius
 		nextEvent.TravelFromCurrentGeoSuspicious, nextEvent.SubsequentLoginAttempt.Speed =
-		 	IsSuspiciousTravel(currLA, nextLA)
+			IsSuspiciousTravel(currLA, nextLA)
 		resp.NextLoginAttempt = &nextEvent
 	}
 

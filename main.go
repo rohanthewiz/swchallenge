@@ -28,6 +28,6 @@ func main() {
 
 	// Start Web Server
 	http.HandleFunc("/", server.HandleV1)
-	logger.Log("Info", "Web server starting on port " + httpPort)
-	log.Fatal(http.ListenAndServe(":" + httpPort, nil))
+	logger.Log("Info", "Web server starting on port "+httpPort)
+	log.Fatal(http.ListenAndServe(":"+httpPort, nil))
 }
