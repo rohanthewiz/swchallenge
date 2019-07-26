@@ -22,13 +22,15 @@ docker logs -f <the_container_id> # use the container id from above
 ```
 
 ## Try out the detector
-POST at least of couple login attempts:  
+POST at least a couple login attempts:  
 
 ```bash
 curl -X POST -d '{"username": "bob", "unix_timestamp": 1514766000, "event_uuid": "85ad929a-db03-4bf4-9541-8f728fa12e43","ip_address": "24.242.71.20"}' http://localhost:8100/v1
 curl -X POST -d '{"username": "bob", "unix_timestamp": 1514664800, "event_uuid": "85ad929a-db03-4bf4-9541-8f728fa12e41","ip_address": "206.90.252.6"}' http://localhost:8100/v1
 curl -X POST -d '{"username": "bob", "unix_timestamp": 1514764800, "event_uuid": "85ad929a-db03-4bf4-9541-8f728fa12e42","ip_address": "206.81.252.6"}' http://localhost:8100/v1
 ```
+
+The JSON response on each should indicate whether travel from previous location, or to subsequent location is suspicious or not
 
 ## External packages used
 - github.com/mattn/go-sqlite3 v1.10.0 - SQLite for storage of login attempts
