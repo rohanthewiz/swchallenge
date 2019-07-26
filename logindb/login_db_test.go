@@ -4,16 +4,11 @@ import (
 	"swchallenge/geo"
 	"swchallenge/logger"
 	"swchallenge/loginattempt"
-	"sync"
 	"testing"
 )
 
-var mutex = &sync.Mutex{}
-
 func TestStoreAndQuery(t *testing.T) {
-	mutex.Lock() // in case of parallel tests
 	laDB := NewDB("login_attempts_test.db")
-	mutex.Unlock()
 	if laDB == nil {
 		t.Fatal("Failed to get a DB handle")
 	}

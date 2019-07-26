@@ -10,9 +10,15 @@ import (
 	"strconv"
 	"swchallenge/logger"
 	"swchallenge/loginattempt"
+	"sync"
 )
 
-var loginDB *DB // DB singleton
+var DBHandle *DB // DB singleton
+var dbMutex *sync.Mutex
+
+func init() {
+	dbMutex = &sync.Mutex{}
+}
 
 // SQLite DB wrapper
 type DB struct {
@@ -22,8 +28,11 @@ type DB struct {
 
 // Create a new sqlite DB wrapper
 func NewDB(path string) *DB {
+	dbMutex.Lock()
+	defer dbMutex.Unlock()
+
 	d := new(DB)
-	if path == "" {
+	if path == "" || path == "default" {
 		path = "loginattempt/login_attempts.db"
 	}
 	d.path = path
@@ -39,15 +48,22 @@ func NewDB(path string) *DB {
 }
 
 func (d DB) Close() {
+	dbMutex.Lock()
+	defer dbMutex.Unlock()
+
 	if d.db != nil {
-		d.db.Close()
+		_ = d.db.Close()
+		d.db = nil
 	}
 }
 
 func (d DB) CreateTable() {
-	d.DropTable()
+	dbMutex.Lock()
+	defer dbMutex.Unlock()
+
+	d.dropTable()
 	query :=
-		`		CREATE TABLE IF NOT EXISTS login_attempts (
+	`		CREATE TABLE IF NOT EXISTS login_attempts (
 			latitude REAL NOT NULL,
 			longitude REAL NOT NULL,
 			radius INTEGER,
@@ -60,9 +76,8 @@ func (d DB) CreateTable() {
 	}
 }
 
-func (d DB) DropTable() {
-	query :=
-		`		DROP TABLE IF EXISTS login_attempts;`
+func (d DB) dropTable() {
+	query := `DROP TABLE IF EXISTS login_attempts;`
 	_, err := d.db.Exec(query)
 	if err != nil {
 		log.Println("Error dropping table.")
@@ -74,8 +89,9 @@ func (d DB) StoreLoginAttempt(lAtt loginattempt.LoginAttempt) error {
 	stage := "when storing login attempt"
 
 	if d.db == nil {
-		return serr.Wrap(errors.New("db handle is nil"), "stage", stage)
+		return serr.Wrap(errors.New("db object is nil"), "stage", stage)
 	}
+
 	query :=
 	`	INSERT OR REPLACE INTO login_attempts(
 				latitude, longitude, radius, ip, created_at)
@@ -101,7 +117,7 @@ func (d DB) QueryLoginAttempts(next bool, timestamp int64) (loginattempt.LoginAt
 	loginAtt := loginattempt.LoginAttempt{}
 
 	if d.db == nil {
-		return loginAtt, serr.Wrap(errors.New("database is not initialized"), "stage", stage)
+		return loginAtt, serr.Wrap(errors.New("database object is nil"), "stage", stage)
 	}
 
 	query := `SELECT latitude, longitude, radius, ip, created_at FROM login_attempts`

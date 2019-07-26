@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"swchallenge/logger"
+	"swchallenge/logindb"
 	"swchallenge/server"
 )
 
@@ -21,6 +22,13 @@ func main() {
 	//	fmt.Println("location:", loc)
 	//}
 
+	// Init DB
+	logindb.DBHandle = logindb.NewDB("default")
+	if logindb.DBHandle == nil {
+		panic("dbHandle cannot be nil")
+	}
+	defer logindb.DBHandle.Close()
+
 	//laDB := logindb.NewDB("logindb/login_attempts_test.db")
 	//defer laDB.Close()
 	//
@@ -36,9 +44,8 @@ func main() {
 	//}
 	//fmt.Println("Login attempt:", la)
 
-
+	// Start Web Server
 	http.HandleFunc("/", server.HandleV1)
-
 	logger.Log("Info", "Web server starting on port " + httpPort)
 	log.Fatal(http.ListenAndServe(":" + httpPort, nil))
 }

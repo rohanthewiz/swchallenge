@@ -23,9 +23,7 @@ func IPToLatLon(dbPath, strIP string) (loc geo.Geo, err error) {
 	err = db.Lookup(ip, &record)
 	if err != nil {
 		return loc, serr.Wrap(err, "Error obtaining lat/lon for IP", "ip", strIP)
-		//return loc, serr.Wrap(err, "Error obtaining lat/lon for IP", "ip", strIP)
 	}
-	// fmt.Printf("%#v\n", record)
 
 	return record.Loc, err
 }
