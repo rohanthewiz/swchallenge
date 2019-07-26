@@ -12,15 +12,9 @@ import (
 
 func main() {
 	const httpPort = "8100"
+
 	logger.SetupLog()
 	logger.Log("Info", "Instance is starting")
-
-	//loc, err := maxmind.IPToLatLon("maxmind/GeoLite2-City/GeoLite2-City.mmdb", "81.2.69.142")
-	//if err != nil {
-	//	logger.LogErr(err)
-	//} else {
-	//	fmt.Println("location:", loc)
-	//}
 
 	// Init DB
 	logindb.DBHandle = logindb.NewDB("default")
@@ -29,20 +23,8 @@ func main() {
 	}
 	defer logindb.DBHandle.Close()
 
-	//laDB := logindb.NewDB("logindb/login_attempts_test.db")
-	//defer laDB.Close()
-	//
-	//la, err := laDB.QueryLoginAttempts(false, 60000)
-	//if err != nil {
-	//	logger.LogErr(err)
-	//}
-	//fmt.Println("Login attempt:", la)
-	//
-	//la, err = laDB.QueryLoginAttempts(true, 60000)
-	//if err != nil {
-	//	logger.LogErr(err)
-	//}
-	//fmt.Println("Login attempt:", la)
+	// For the sake of this exercise, start with a fresh table
+	logindb.DBHandle.CreateTable()
 
 	// Start Web Server
 	http.HandleFunc("/", server.HandleV1)

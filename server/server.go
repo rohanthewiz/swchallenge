@@ -42,6 +42,11 @@ func HandleV1(w http.ResponseWriter, r *http.Request) {
 
 		resp, err := superman.ProcessLoginAttempt(
 			reqParams.EventUUID, reqParams.IPAddress, reqParams.Username, reqParams.Timestamp)
+		if err != nil {
+			logger.LogErr(err, "Error when processing login attempt")
+			http.Error(w, "Error when processing the response", 500)
+			return
+		}
 
 		// Response
 		respByts, err := json.Marshal(resp)

@@ -7,7 +7,12 @@ import (
 	"swchallenge/geo"
 )
 
+const defaultMaxMindDBPath = "maxmind/GeoLite2-City/GeoLite2-City.mmdb"
+
 func IPToLatLon(dbPath, strIP string) (loc geo.Geo, err error) {
+	if dbPath == "" || dbPath == "default" {
+		dbPath = defaultMaxMindDBPath
+	}
 	db, err := maxminddb.Open(dbPath)
 	if err != nil {
 		return loc, serr.Wrap(err, "Error opening maxmind database")
